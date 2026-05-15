@@ -4,11 +4,24 @@ from flask_login import LoginManager, UserMixin, login_user, logout_user, login_
 from werkzeug.security import generate_password_hash, check_password_hash
 import os
 
-app = Flask(__name__)
-app.config['SECRET_KEY'] = 'tera-super-secret-key-12345' 
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///bug_tracker.db'
-app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+database_url = os.environ.get('DATABASE_URL')
+if database_url and database_url.startswith("postgres://"):
+    database_url = database_url.replace("postgres://", "postgresql://", 1)
+
+    app = Flask(__name__)
+    app.config['SECRET_KEY'] = 'tera-super-key-1234'
+    if not database_url:
+        raise Exception("DATABASE_URL nahi mila bhai!")
+    
+    app.config['SQLALCHEMY_DATABASE_URI'] = database_url
+    print("=== DB CONNECTED TO ===", database_url[:30])
+    app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
+
+
+# DB create karo - gunicorn ke liye
+with app.app_context():
+    db.create_all()
 
 # Flask-Login setup
 login_manager = LoginManager()
@@ -121,6 +134,4 @@ def edit_bug(bug_id):
     return render_template('edit.html', bug=bug)
 
 if __name__ == '__main__':
-    with app.app_context():
-        db.create_all()
     app.run(host='0.0.0.0', port=10000)
