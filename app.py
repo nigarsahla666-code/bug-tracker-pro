@@ -1,22 +1,21 @@
-from flask import Flask, render_template, request, redirect, url_for, flash
+from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
-from flask_login import LoginManager, UserMixin, login_user, logout_user, login_required, current_user
-from werkzeug.security import generate_password_hash, check_password_hash
 import os
+from flask_login import LoginManager, UserMixin
+
+app = Flask(__name__)  # Pehle app banao
 
 database_url = os.environ.get('DATABASE_URL')
 if database_url and database_url.startswith("postgres://"):
     database_url = database_url.replace("postgres://", "postgresql://", 1)
 
-    app = Flask(__name__)
-    app.config['SECRET_KEY'] = 'tera-super-key-1234'
-    if not database_url:
-        raise Exception("DATABASE_URL nahi mila bhai!")
+if not database_url:
+    raise Exception("DATABASE_URL nahi mila bhai!")
     
-    app.config['SQLALCHEMY_DATABASE_URI'] = database_url
-    print("=== DB CONNECTED TO ===", database_url[:30])
-    app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-db = SQLAlchemy(app)
+app.config['SQLALCHEMY_DATABASE_URI'] = database_url
+print("=== DB CONNECTED TO ===", database_url[:30])
+
+db = SQLAlchemy(app)  # Ab app ban gaya, to ye neeche likho
 
 
 # DB create karo - gunicorn ke liye
