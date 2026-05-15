@@ -93,7 +93,34 @@ def submit():
     db.session.commit()
     return redirect(url_for('index'))
 
+@app.route('/status/<int:bug_id>/<new_status>')
+@login_required
+def update_status(bug_id, new_status):
+    bug = Bug.query.get_or_404(bug_id)
+    bug.status = new_status
+    db.session.commit()
+    return redirect(url_for('index'))
+
+@app.route('/delete/<int:bug_id>')
+@login_required
+def delete_bug(bug_id):
+    bug = Bug.query.get_or_404(bug_id)
+    db.session.delete(bug)
+    db.session.commit()
+    return redirect(url_for('index'))
+
+@app.route('/edit/<int:bug_id>', methods=['GET', 'POST'])
+@login_required
+def edit_bug(bug_id):
+    bug = Bug.query.get_or_404(bug_id)
+    if request.method == 'POST':
+        bug.title = request.form['title']
+        bug.description = request.form['description']
+        db.session.commit()
+        return redirect(url_for('index'))
+    return render_template('edit.html', bug=bug)
+
 if __name__ == '__main__':
     with app.app_context():
         db.create_all()
-    app.run(debug=True)
+    app.run(host='0.0.0.0', port=10000)
