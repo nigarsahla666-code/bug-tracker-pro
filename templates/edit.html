@@ -13,15 +13,11 @@
 <body>
     <div class="container">
         <h1>Edit Bug ID: {{ bug.id }}</h1>
-        <form method="POST" action="/update/{{ bug.id }}">
-            <label>Bug Title:</label>
-            <input type="text" name="title" value="{{ bug.title }}" required>
-            
-            <label>Bug Description:</label>
-            <textarea name="description" required rows="4">{{ bug.description }}</textarea>
-            
-            <button type="submit">Update Bug</button>
-        </form>
+        <form method="POST" action="/edit/{{ bug.id }}">
+    <input name="title" value="{{ bug.title }}">
+    <textarea name="description">{{ bug.description }}</textarea>
+    <button type="submit">Update Bug</button>
+</form>
         <br>
         <a href="/">← Back to Home</a>
     </div>
