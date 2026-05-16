@@ -19,8 +19,6 @@ db = SQLAlchemy(app)  # Ab app ban gaya, to ye neeche likho
 
 
 # DB create karo - gunicorn ke liye
-with app.app_context():
-    db.create_all()
 
 # Flask-Login setup
 login_manager = LoginManager()
@@ -45,7 +43,8 @@ class Bug(db.Model):
     title = db.Column(db.String(100), nullable=False)
     description = db.Column(db.Text, nullable=False)
     status = db.Column(db.String(20), default='Pending')
-
+with app.app_context():
+    db.create_all()
 @login_manager.user_loader
 def load_user(user_id):
     return User.query.get(int(user_id))
